@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" width="960" height="500" role="img" aria-label="The six light shapes: Flat, Softbox, Ring, Two Panel, Top Band and Gradient">
+  <title>Keylight shapes</title>
+  <defs>
+    <linearGradient id="warm" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffdf8"/>
+      <stop offset="1" stop-color="#ffeccf"/>
+    </linearGradient>
+    <linearGradient id="bandGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffdf8" stop-opacity="1"/>
+      <stop offset="0.6" stop-color="#fff3de" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#ffeccf" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="gradGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffdf8" stop-opacity="1"/>
+      <stop offset="0.45" stop-color="#fff4e2" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#ffeccf" stop-opacity="0.04"/>
+    </linearGradient>
+
+    <!-- The app feathers with a real Gaussian blur, so the diagram does too. -->
+    <filter id="soft14" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+    <filter id="soft9" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="9"/>
+    </filter>
+
+    <clipPath id="tile"><rect x="0" y="0" width="280" height="158" rx="8"/></clipPath>
+  </defs>
+
+  <rect width="960" height="500" rx="16" fill="#0d0f13"/>
+
+  <!-- ───── row 1 ───── -->
+  <g transform="translate(40,34)">
+    <rect width="280" height="158" rx="8" fill="#000"/>
+    <g clip-path="url(#tile)"><rect width="280" height="158" fill="url(#warm)"/></g>
+    <text x="0" y="186" fill="#9aa2b1" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="15" font-weight="700">Flat</text>
+    <text x="0" y="207" fill="#656d7c" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="12.5">Whole panel, maximum spread</text>
+  </g>
+
+  <g transform="translate(340,34)">
+    <rect width="280" height="158" rx="8" fill="#000"/>
+    <g clip-path="url(#tile)">
+      <rect x="30" y="24" width="220" height="110" rx="18" fill="url(#warm)" filter="url(#soft14)"/>
+    </g>
+    <text x="0" y="186" fill="#9aa2b1" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="15" font-weight="700">Softbox</text>
+    <text x="0" y="207" fill="#656d7c" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="12.5">Feathered rectangle, directional</text>
+  </g>
+
+  <g transform="translate(640,34)">
+    <rect width="280" height="158" rx="8" fill="#000"/>
+    <g clip-path="url(#tile)">
+      <circle cx="140" cy="79" r="56" fill="none" stroke="url(#warm)" stroke-width="24" filter="url(#soft9)"/>
+    </g>
+    <text x="0" y="186" fill="#9aa2b1" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="15" font-weight="700">Ring</text>
+    <text x="0" y="207" fill="#656d7c" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="12.5">Round catchlights in the eyes</text>
+  </g>
+
+  <!-- ───── row 2 ───── -->
+  <g transform="translate(40,286)">
+    <rect width="280" height="158" rx="8" fill="#000"/>
+    <g clip-path="url(#tile)">
+      <rect x="14" y="22" width="46" height="114" rx="20" fill="url(#warm)" filter="url(#soft9)"/>
+      <rect x="220" y="22" width="46" height="114" rx="20" fill="url(#warm)" filter="url(#soft9)"/>
+    </g>
+    <text x="0" y="186" fill="#9aa2b1" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="15" font-weight="700">Two Panel <tspan fill="#e0a94a">· default</tspan></text>
+    <text x="0" y="207" fill="#656d7c" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="12.5">Key and fill from both sides</text>
+  </g>
+
+  <g transform="translate(340,286)">
+    <rect width="280" height="158" rx="8" fill="#000"/>
+    <g clip-path="url(#tile)"><rect x="0" y="0" width="280" height="92" fill="url(#bandGrad)"/></g>
+    <text x="0" y="186" fill="#9aa2b1" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="15" font-weight="700">Top Band</text>
+    <text x="0" y="207" fill="#656d7c" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="12.5">Light from above, natural falloff</text>
+  </g>
+
+  <g transform="translate(640,286)">
+    <rect width="280" height="158" rx="8" fill="#000"/>
+    <g clip-path="url(#tile)"><rect width="280" height="158" fill="url(#gradGrad)"/></g>
+    <text x="0" y="186" fill="#9aa2b1" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="15" font-weight="700">Gradient</text>
+    <text x="0" y="207" fill="#656d7c" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="12.5">Bright top fading to fill</text>
+  </g>
+</svg>
