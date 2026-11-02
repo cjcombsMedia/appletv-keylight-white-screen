@@ -39,17 +39,32 @@ those light the middle of the screen, which is the part your windows cover.
 
 ## Controls
 
-The box has the two things you actually change mid-call up top — **Brightness** and **Warmth**
-— plus the shape picker and presets. Everything else lives under **More**:
+The box has the things you actually change mid-call up top: **Brightness**, **Warmth**, the
+shape picker and presets, and the shape's own controls:
+
+- **Size** (*Bar width*, *Band height* or *Ring size*, depending on the shape): 10–100%
+- **Ring width**: how thick the ring's stroke is, separate from how big the ring is
+- **Edges**: from **Hard** (no blur at all, a pixel-sharp edge) to **Soft**
+- **Edge to edge**: runs the shape right off the screen's border, so the light meets the edge
+  of the display at full strength and only the inward-facing side is softened. Two Panel
+  becomes two full-height bars flush to the sides, Softbox a full-width band, Top Band a strip
+  flush to the top and both sides, and Ring a **frame around the whole screen border** (its
+  width set by *Frame width*). Flat and Gradient already fill the screen, so the toggle is
+  hidden for them.
+
+Below that, **Light on** has one button per attached monitor. Click to switch a display on or
+off, right-click for *Light Only This Display*, and use **All displays** to bring them all back.
+The list follows monitors being plugged and unplugged, and the same choice is in the menu bar
+under **Light On**. Two identical monitors share a name, so they're told apart by serial
+number.
+
+Everything else lives under **More**:
 
 - **Tint** — the ±green/magenta axis, to match the room so your camera's auto white balance
   stops hunting
-- **Size / Softness** — how wide the bars are and how soft their edges
 - **Backdrop** — opacity of the fill behind the lit shape. 0 (default) leaves everything
   visible; raise it to isolate the light
 - **Stacking** — behind apps or in front
-- **Displays** — one toggle per attached screen. Light only the display you're facing; the set
-  updates automatically when you plug or unplug a monitor
 - **Follow the camera** — off by default. When on, the light comes up the moment another app
   opens the camera and drops when it lets go. Keylight never opens the camera itself, it only
   asks whether someone else has it

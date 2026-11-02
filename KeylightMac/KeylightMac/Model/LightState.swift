@@ -32,6 +32,22 @@ enum LightLayout: String, Codable, CaseIterable, Identifiable {
     }
 
     var isShaped: Bool { self != .flat }
+
+    /// Layouts that can run off the edges of the display. Flat and Gradient already fill it.
+    var supportsEdgeToEdge: Bool {
+        self == .twoPanel || self == .softbox || self == .ring || self == .topBand
+    }
+
+    /// What "edge to edge" turns this layout into, for the caption under the toggle.
+    var edgeToEdgeDetail: String {
+        switch self {
+        case .twoPanel: return "Bars run flush to the left and right edges, top to bottom"
+        case .softbox:  return "A full-width band, flush to the left and right edges"
+        case .ring:     return "The ring becomes a frame around the border of the screen"
+        case .topBand:  return "The band runs flush to the top and both sides"
+        case .gradient, .flat: return ""
+        }
+    }
 }
 
 /// Where the light window sits in the window stack.
@@ -67,7 +83,14 @@ struct LightState: Codable, Equatable {
     var saturation: Double = 0.85
 
     var size: Double = 0.75
+    /// Edge softness. 0 is a hard, pixel-sharp edge; 1 is the widest fade.
     var feather: Double = 0.5
+    /// Ring stroke as a fraction of its diameter, or of the screen's short side when the
+    /// ring is drawn edge to edge as a frame.
+    var thickness: Double = 0.2
+    /// Run the shape off the display's edges so the light reaches the border at full
+    /// strength, with only the inward-facing sides carrying the softness.
+    var edgeToEdge = false
 
     /// Opacity of the fill behind the lit shape. 0 leaves the desktop (or your windows,
     /// in front mode) completely visible; higher values isolate the light.
@@ -98,6 +121,48 @@ struct LightState: Codable, Equatable {
     func isLit(screenNamed name: String) -> Bool {
         !disabledScreens.contains(name)
     }
+}
+
+// MARK: - Decoding
+
+extension LightState {
+    /// Every field falls back to its default, so a state saved by an older build — one
+    /// without `edgeToEdge` or `thickness`, say — still loads instead of resetting
+    /// everything the user had set.
+    init(from decoder: Decoder) throws {
+        self.init()
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        isOn            = try c.decodeIfPresent(Bool.self, forKey: .isOn) ?? isOn
+        mode            = try c.decodeIfPresent(LightMode.self, forKey: .mode) ?? mode
+        layout          = try c.decodeIfPresent(LightLayout.self, forKey: .layout) ?? layout
+        brightness      = try c.decodeIfPresent(Double.self, forKey: .brightness) ?? brightness
+        kelvin          = try c.decodeIfPresent(Double.self, forKey: .kelvin) ?? kelvin
+        tint            = try c.decodeIfPresent(Double.self, forKey: .tint) ?? tint
+        hue             = try c.decodeIfPresent(Double.self, forKey: .hue) ?? hue
+        saturation      = try c.decodeIfPresent(Double.self, forKey: .saturation) ?? saturation
+        size            = try c.decodeIfPresent(Double.self, forKey: .size) ?? size
+        feather         = try c.decodeIfPresent(Double.self, forKey: .feather) ?? feather
+        thickness       = try c.decodeIfPresent(Double.self, forKey: .thickness) ?? thickness
+        edgeToEdge      = try c.decodeIfPresent(Bool.self, forKey: .edgeToEdge) ?? edgeToEdge
+        backdrop        = try c.decodeIfPresent(Double.self, forKey: .backdrop) ?? backdrop
+        stacking        = try c.decodeIfPresent(Stacking.self, forKey: .stacking) ?? stacking
+        disabledScreens = try c.decodeIfPresent(Set<String>.self, forKey: .disabledScreens) ?? disabledScreens
+        followCamera    = try c.decodeIfPresent(Bool.self, forKey: .followCamera) ?? followCamera
+    }
+}
+
+// MARK: - Displays
+
+/// One attached screen, as the controls list it.
+struct DisplayInfo: Identifiable, Equatable {
+    /// What `LightState.disabledScreens` remembers it by.
+    let key: String
+    let isBuiltIn: Bool
+    /// The display with the menu bar.
+    let isPrimary: Bool
+
+    var id: String { key }
+    var symbol: String { isBuiltIn ? "laptopcomputer" : "display" }
 }
 
 // MARK: - Presets

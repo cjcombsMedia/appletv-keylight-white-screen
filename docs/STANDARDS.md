@@ -65,6 +65,10 @@ supported language mode.
 | `NSRunningApplication.activate()` | macOS | macOS 14 | no-argument form; `activateIgnoringOtherApps` deprecated in 14 |
 | `SMAppService.mainApp` | macOS | macOS 13 | login item, no helper bundle |
 | `ProcessInfo.beginActivity(.idleDisplaySleepDisabled)` | macOS | — | holds the display awake while lit |
+| `CGDisplayIsBuiltin` / `CGDisplaySerialNumber` | macOS | — | built-in vs external icon; serial tells identical monitors apart. A `CGDirectDisplayID` only lasts until restart, so it is not persisted ([Quartz Display Services](https://developer.apple.com/documentation/CoreGraphics/quartz-display-services), checked 2026-11-02) |
+| `NSMenuDelegate.menuNeedsUpdate(_:)` | macOS | — | status menu rebuilt on open so the display list is current ([NSMenuDelegate](https://developer.apple.com/documentation/appkit/nsmenudelegate), checked 2026-11-02) |
+| `Toggle` + `.toggleStyle(.button)` | macOS | macOS 12 | display chips in the panel |
+| `ImageRenderer` | verification harness only | macOS 13 | renders `LightStageView` offscreen to PNG when Screen Recording isn't granted; not shipped in the app ([ImageRenderer](https://developer.apple.com/documentation/swiftui/imagerenderer), checked 2026-11-02; the availability badge wasn't in the search snippet, macOS 13 is from the SDK) |
 
 ### Platform behaviour learned the hard way
 
@@ -82,6 +86,11 @@ genuine ancestor (which is why `Button { } label: { }` works).
 **tvOS app icons require the tvOS Simulator runtime**, even for a device-only build.
 `actool` fails with *"No available simulator runtimes for platform appletvsimulator"* —
 misleading, because the asset catalog is fine. Fix: `xcodebuild -downloadPlatform tvOS`.
+
+**Adding a field to a synthesized `Codable` struct wipes saved settings.** Synthesized
+`init(from:)` throws on a missing key even when the property has a default, so the first
+launch of a new build would fail to decode and silently reset every setting. `LightState`
+now decodes each field with `decodeIfPresent` and falls back to its default.
 
 **`devicectl device capture screenshot` does not work against tvOS.** Returns
 `CoreDeviceError 25004`. Apple TV screenshots have to come off the device by hand.

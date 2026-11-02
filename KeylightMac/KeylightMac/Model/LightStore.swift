@@ -16,6 +16,10 @@ final class LightStore {
     /// `state.followCamera` is on, which is what starts the monitor.
     var cameraInUse = false
 
+    /// Screens attached right now, refreshed whenever one is plugged in or unplugged so
+    /// the display picker never offers a monitor that isn't there.
+    var displays: [DisplayInfo] = NSScreen.attachedDisplays
+
     @ObservationIgnored private var saveTask: Task<Void, Never>?
     @ObservationIgnored private var sleepActivity: NSObjectProtocol?
     @ObservationIgnored private let key = "mac.light.state.v1"
@@ -28,6 +32,13 @@ final class LightStore {
             state = LightState()
         }
         updateSleepAssertion()
+
+        NotificationCenter.default.addObserver(
+            forName: NSApplication.didChangeScreenParametersNotification,
+            object: nil, queue: .main) { [weak self] _ in
+                let attached = NSScreen.attachedDisplays
+                if self?.displays != attached { self?.displays = attached }
+            }
     }
 
     // MARK: Persistence
@@ -84,6 +95,24 @@ final class LightStore {
 
     func setScreen(_ name: String, lit: Bool) {
         if lit { state.disabledScreens.remove(name) } else { state.disabledScreens.insert(name) }
+    }
+
+    /// Light every attached display.
+    func lightAllDisplays() {
+        state.disabledScreens.subtract(displays.map(\.key))
+    }
+
+    /// Light this display and switch every other attached one off.
+    func lightOnly(_ key: String) {
+        var disabled = state.disabledScreens
+        for display in displays {
+            if display.key == key { disabled.remove(display.key) } else { disabled.insert(display.key) }
+        }
+        state.disabledScreens = disabled
+    }
+
+    var allDisplaysLit: Bool {
+        displays.allSatisfy { state.isLit(screenNamed: $0.key) }
     }
 
     /// Called by the camera monitor. Only drives the light while the option is enabled.

@@ -15,6 +15,8 @@ struct ControlPanelView: View {
             header
             Divider()
             essentials
+            Divider()
+            displayPicker
             if !callApps.isEmpty {
                 Divider()
                 appButtons
@@ -94,6 +96,111 @@ struct ControlPanelView: View {
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
+
+            shapeControls
+        }
+    }
+
+    // MARK: Shape
+
+    /// Size, ring width, edge hardness and edge to edge. Up front rather than under More,
+    /// because these are what make a shape fit the face and the screen it's on.
+    @ViewBuilder
+    private var shapeControls: some View {
+        @Bindable var store = store
+        let layout = store.state.layout
+        let edge = store.state.edgeToEdge && layout.supportsEdgeToEdge
+
+        if layout.isShaped {
+            // Edge to edge, the ring is a border frame and its only dimension is its width.
+            if !(layout == .ring && edge) {
+                slider(sizeTitle(layout, edge: edge), value: $store.state.size, range: 0.1...1,
+                       readout: percent(store.state.size))
+            }
+            if layout == .ring {
+                slider(edge ? "Frame width" : "Ring width", value: $store.state.thickness,
+                       range: 0.04...0.5, readout: percent(store.state.thickness))
+            }
+            slider("Edges", value: $store.state.feather, range: 0...1,
+                   readout: edgeLabel, ends: ("Hard", "Soft"))
+        }
+
+        if layout.supportsEdgeToEdge {
+            Toggle(isOn: $store.state.edgeToEdge) {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Edge to edge").font(.system(size: 11, weight: .medium))
+                    Text(edge ? layout.edgeToEdgeDetail : "Run the light right to the screen's edges")
+                        .font(.system(size: 10))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .controlSize(.small)
+        }
+    }
+
+    private func sizeTitle(_ layout: LightLayout, edge: Bool) -> String {
+        switch layout {
+        case .twoPanel where edge: return "Bar width"
+        case .softbox where edge, .topBand: return "Band height"
+        case .ring: return "Ring size"
+        default: return "Size"
+        }
+    }
+
+    private var edgeLabel: String {
+        let v = store.state.feather
+        if v < 0.01 { return "Hard" }
+        return "Soft \(percent(v))"
+    }
+
+    // MARK: Displays
+
+    /// One button per attached monitor. Click to switch that display on or off; right-click
+    /// for "Light only this one". The list follows monitors being plugged and unplugged.
+    private var displayPicker: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text("LIGHT ON")
+                    .font(.system(size: 9, weight: .heavy))
+                    .tracking(0.8)
+                    .foregroundStyle(.tertiary)
+                Spacer()
+                if store.displays.count > 1 {
+                    Button("All displays") { store.lightAllDisplays() }
+                        .buttonStyle(.link)
+                        .font(.system(size: 10, weight: .medium))
+                        .disabled(store.allDisplaysLit)
+                }
+            }
+            LazyVGrid(columns: [GridItem(.flexible(), spacing: 8),
+                                GridItem(.flexible(), spacing: 8)],
+                      spacing: 6) {
+                ForEach(store.displays) { display in
+                    Toggle(isOn: Binding(
+                        get: { store.state.isLit(screenNamed: display.key) },
+                        set: { store.setScreen(display.key, lit: $0) }
+                    )) {
+                        Label(display.key, systemImage: display.symbol)
+                            .font(.system(size: 11, weight: .medium))
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .toggleStyle(.button)
+                    .controlSize(.small)
+                    .help(display.isPrimary ? "\(display.key) — has the menu bar" : display.key)
+                    .contextMenu {
+                        Button("Light Only This Display") { store.lightOnly(display.key) }
+                        Button("Light All Displays") { store.lightAllDisplays() }
+                    }
+                }
+            }
+            if store.displays.allSatisfy({ !store.state.isLit(screenNamed: $0.key) }) {
+                Text("No display is selected, so nothing is lit.")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 
@@ -159,13 +266,6 @@ struct ControlPanelView: View {
         return VStack(alignment: .leading, spacing: 12) {
             slider("Tint", value: $store.state.tint, range: -1...1, readout: tintLabel)
 
-            if store.state.layout.isShaped {
-                slider("Size", value: $store.state.size, range: 0.25...1,
-                       readout: percent(store.state.size))
-                slider("Softness", value: $store.state.feather, range: 0...1,
-                       readout: percent(store.state.feather))
-            }
-
             slider("Backdrop", value: $store.state.backdrop, range: 0...1,
                    readout: store.state.backdrop < 0.01 ? "Off" : percent(store.state.backdrop))
 
@@ -184,8 +284,6 @@ struct ControlPanelView: View {
                     .font(.system(size: 10))
                     .foregroundStyle(.secondary)
             }
-
-            screenToggles
 
             Toggle(isOn: $store.state.followCamera) {
                 VStack(alignment: .leading, spacing: 1) {
@@ -214,30 +312,11 @@ struct ControlPanelView: View {
         }
     }
 
-    private var screenToggles: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("DISPLAYS")
-                .font(.system(size: 9, weight: .heavy))
-                .tracking(0.8)
-                .foregroundStyle(.tertiary)
-            ForEach(NSScreen.screens, id: \.keylightName) { screen in
-                Toggle(isOn: Binding(
-                    get: { store.state.isLit(screenNamed: screen.keylightName) },
-                    set: { store.setScreen(screen.keylightName, lit: $0) }
-                )) {
-                    Text(screen.keylightName)
-                        .font(.system(size: 11))
-                        .lineLimit(1)
-                }
-                .controlSize(.small)
-            }
-        }
-    }
-
     // MARK: Bits
 
     private func slider(_ title: String, value: Binding<Double>,
-                        range: ClosedRange<Double>, readout: String) -> some View {
+                        range: ClosedRange<Double>, readout: String,
+                        ends: (String, String)? = nil) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             HStack {
                 Text(title).font(.system(size: 11, weight: .medium))
@@ -247,7 +326,18 @@ struct ControlPanelView: View {
                     .monospacedDigit()
                     .foregroundStyle(.secondary)
             }
-            Slider(value: value, in: range).controlSize(.small)
+            if let ends {
+                Slider(value: value, in: range) {
+                    EmptyView()
+                } minimumValueLabel: {
+                    Text(ends.0).font(.system(size: 9)).foregroundStyle(.tertiary)
+                } maximumValueLabel: {
+                    Text(ends.1).font(.system(size: 9)).foregroundStyle(.tertiary)
+                }
+                .controlSize(.small)
+            } else {
+                Slider(value: value, in: range).controlSize(.small)
+            }
         }
     }
 

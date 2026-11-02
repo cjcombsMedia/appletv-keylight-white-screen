@@ -127,8 +127,22 @@ extension NSScreen {
         deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? CGDirectDisplayID
     }
 
-    /// Stable-enough identity for remembering which displays the user switched off.
+    /// Stable-enough identity for remembering which displays the user switched off. Two
+    /// identical monitors share a `localizedName`, so those get the serial number (or,
+    /// failing that, their position) appended to tell them apart.
     var keylightName: String {
-        localizedName
+        let twins = NSScreen.screens.filter { $0.localizedName == localizedName }
+        guard twins.count > 1, let id = displayID else { return localizedName }
+        let serial = CGDisplaySerialNumber(id)
+        if serial != 0 { return "\(localizedName) #\(serial)" }
+        return "\(localizedName) \((twins.firstIndex(of: self) ?? 0) + 1)"
+    }
+
+    static var attachedDisplays: [DisplayInfo] {
+        screens.enumerated().map { index, screen in
+            DisplayInfo(key: screen.keylightName,
+                        isBuiltIn: screen.displayID.map { CGDisplayIsBuiltin($0) != 0 } ?? false,
+                        isPrimary: index == 0)
+        }
     }
 }

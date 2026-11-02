@@ -73,7 +73,9 @@ The setting that makes it useful is **stacking**:
 In-front mode only works because the shaped layouts leave the middle of the screen fully
 transparent rather than black.
 
-Plus: per-display toggles that follow monitors being plugged and unplugged, **Show Teams /
+Plus: a display picker that follows monitors being plugged and unplugged, hard-to-soft edges,
+an **edge to edge** mode (the Ring becomes a frame around the screen border), separate ring
+size and width, **Show Teams /
 Zoom / Slack / FaceTime** buttons for whatever is actually installed, **Hide Others** to clear
 the screen in one click, optional **follow-the-camera** (light comes up when another app opens
 the camera, drops when it lets go — Keylight never opens it itself), display-sleep held off

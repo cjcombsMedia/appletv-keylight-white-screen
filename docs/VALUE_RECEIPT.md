@@ -14,12 +14,12 @@
 
 | Metric | Total |
 |---|---|
-| Tokens (all types) | **~103,560,000** (measured through iter 02 write-up) |
-| Estimated API-equivalent cost | **~$274** (ESTIMATE) |
-| Active build time | **~2.75 h** (iter 02 portion ESTIMATE) |
-| Manual-equivalent effort | **~50.5 h** (ESTIMATE) |
-| Hours saved | **~47.75 h** (ESTIMATE) |
-| Value at $100/hr | **~$4,775** (ESTIMATE) |
+| Tokens (all types) | **~106,236,000** (measured through iter 03) |
+| Estimated API-equivalent cost | **~$281** (ESTIMATE) |
+| Active build time | **~2.85 h** (iter 02–03 portions from transcript timestamps) |
+| Manual-equivalent effort | **~55.5 h** (ESTIMATE) |
+| Hours saved | **~52.65 h** (ESTIMATE) |
+| Value at $100/hr | **~$5,265** (ESTIMATE) |
 
 ---
 
@@ -145,3 +145,51 @@ recorded the second Mac's toolchain.
 
 **Screenshot:** none. `screencapture` returned *"could not create image from window"*
 because the terminal process has no Screen Recording permission on this Mac.
+
+---
+
+## Iteration 03 — 2026-11-02 13:55 — Display picker, hard/soft edges, edge to edge, ring size
+
+**What shipped**
+
+- **Display picker** at the front of the control panel: one button per attached monitor
+  (built-in vs external icon), right-click *Light Only This Display*, *All displays*, a warning
+  when nothing is selected. It follows hot-plugging. A matching **Light On** submenu sits in
+  the menu bar, rebuilt on open.
+- **Edges** slider from a true zero-blur **Hard** to a wider **Soft** (was 2 px minimum,
+  0.30× max; now 0 and 0.45×).
+- **Edge to edge** for Two Panel, Softbox, Ring and Top Band. The ring becomes a frame around
+  the screen border.
+- **Ring width** separate from **Ring size**. Size range widened to 10–100%. Size and edge
+  controls moved out of *More*.
+- Identical monitors are told apart by serial number.
+- Tolerant `LightState` decoder, so existing saved settings survive the new fields.
+
+**Measured work**
+
+| | |
+|---|---|
+| Files edited | 6 Swift + 5 docs |
+| Swift diff | +356 / −51 lines; Mac app now ~1,684 lines |
+| Builds / installs | 1 Release build (0 errors, 0 warnings), 1 install to `/Applications` |
+| Verification | harness compiled from app sources: old-format decode ✔, round trip ✔, displays detected ✔, 7 offscreen renders checked |
+| Errors fixed | 1 caught before shipping (saved settings would reset); 1 harness compile error (`-parse-as-library` with top-level code) |
+
+**Tokens (measured from transcript):** session total 3,696,595 minus the 1,021,749 recorded at
+iter 02 = **~2,674,846** for this iteration, including the tail of the iter 02 write-up.
+Output 30,673 · cache creation 52,935 · cache read 2,591,194 · input 44.
+
+**Cost — ESTIMATE:** ~$7 API-equivalent. Plan billing, not metered.
+
+**Plan usage %:** 5-hour window 2% at iter 02's reading. Not re-read this iteration. Run `/usage`.
+
+**Manual-equivalent — ESTIMATE:** ~5 h. Basis: ~350 lines of SwiftUI/AppKit, including
+off-screen bleed geometry for four shapes, a backward-compatible decoder, display identity,
+menu delegate wiring, and an offscreen render harness. **Actual elapsed:** ~0.1 h (measured
+from transcript timestamps). **Saved:** ~4.9 h, **~$490** (ESTIMATE).
+
+**Other value:** caught a settings-wipe bug before it shipped; documented the `Codable`
+gotcha in STANDARDS.md; checked 4 APIs against developer.apple.com.
+
+**Image:** [offscreen shape renders](../screenshots/2026-11-02_iter-03_shape-renders.png).
+This is a render, not a screen capture. Screen Recording is still not granted.

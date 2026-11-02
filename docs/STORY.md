@@ -109,3 +109,37 @@ couldn't read the window, and no image was faked in its place.
 **Lesson.** Pinning `SWIFT_VERSION = 5.0` and minimal concurrency checking let a major Xcode
 upgrade go through without any code changes.
 
+---
+
+## Chapter 3 — Choose the screen, shape the edge
+
+*2026-11-02 · iteration 03*
+
+**The goal** was four controls: pick which connected monitor lights, make the edges harder or
+softer, run the light edge to edge, and size the ring. Reading the code first showed that half
+of this already existed but was hidden. Per-display toggles and Size/Softness sat under
+**More**, Softness never got below a two-pixel blur, and the ring's width was hard-coded at
+20% of its diameter. So the work was part surfacing and part new geometry. The display picker
+moved to the front of the panel as one button per monitor, with *Light Only This Display* on
+right-click, *All displays*, and a matching menu-bar submenu that rebuilds each time it opens.
+Edges now run from a true zero-blur **Hard** to a wider **Soft**. **Edge to edge** pushes each
+shape's outer sides off-screen by twice the blur radius. The fade happens where nobody can see
+it, so the light meets the border at full strength. On the Ring this produced the best new
+shape of the iteration: a frame around the whole display.
+
+**What nearly broke.** Adding two fields to a synthesized `Codable` struct would have made
+the first launch fail to decode and silently reset every saved setting. A tolerant decoder
+went in before the build. It was then tested against the exact JSON the installed app had
+saved, and the old values came through.
+
+**Proving it without a screenshot.** Screen Recording still isn't granted, so a small harness
+compiled the app's own model and light files, rendered seven shape configurations offscreen
+with `ImageRenderer`, and checked them by eye. That contact sheet is this chapter's image,
+labelled as a render rather than a capture. The live proof came from the saved state: by the
+time the docs were written, it showed the new build in use, with Ring set edge to edge and the
+built-in display switched off.
+
+**Lesson.** Before building a feature, check whether it already exists and is just hard to
+find. Half of this request was already in the app.
+
+**Image:** [shape renders](../screenshots/2026-11-02_iter-03_shape-renders.png)

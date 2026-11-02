@@ -13,7 +13,7 @@ struct KeylightMacApp: App {
 }
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private let store = LightStore()
     private var lights: LightWindowManager!
@@ -49,11 +49,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.button?.image = NSImage(systemSymbolName: "lightbulb.fill",
                                            accessibilityDescription: "Keylight")
         statusItem.button?.toolTip = "Keylight"
+        let menu = NSMenu()
+        menu.delegate = self
+        statusItem.menu = menu
+        rebuildMenu()
+    }
+
+    /// Rebuilt every time it opens, so the display list matches what's plugged in now.
+    func menuNeedsUpdate(_ menu: NSMenu) {
         rebuildMenu()
     }
 
     private func rebuildMenu() {
-        let menu = NSMenu()
+        guard let menu = statusItem.menu else { return }
+        menu.removeAllItems()
 
         let toggle = NSMenuItem(title: store.state.isOn ? "Turn Light Off" : "Turn Light On",
                                 action: #selector(toggleLight), keyEquivalent: "")
@@ -77,6 +86,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         presets.submenu = submenu
         menu.addItem(presets)
+
+        let displays = NSMenuItem(title: "Light On", action: nil, keyEquivalent: "")
+        let displayMenu = NSMenu()
+        for display in store.displays {
+            let item = NSMenuItem(title: display.key,
+                                  action: #selector(toggleDisplay(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = display.key
+            item.state = store.state.isLit(screenNamed: display.key) ? .on : .off
+            item.image = NSImage(systemSymbolName: display.symbol, accessibilityDescription: nil)
+            displayMenu.addItem(item)
+        }
+        if store.displays.count > 1 {
+            displayMenu.addItem(.separator())
+            let all = NSMenuItem(title: "All Displays",
+                                 action: #selector(lightAllDisplays), keyEquivalent: "")
+            all.target = self
+            all.isEnabled = !store.allDisplaysLit
+            displayMenu.addItem(all)
+        }
+        displays.submenu = displayMenu
+        menu.addItem(displays)
 
         for app in CallApp.installed {
             let item = NSMenuItem(title: "Show \(app.name)",
@@ -105,8 +136,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let quit = NSMenuItem(title: "Quit Keylight", action: #selector(quit), keyEquivalent: "q")
         quit.target = self
         menu.addItem(quit)
-
-        statusItem.menu = menu
     }
 
     // MARK: Actions
@@ -125,6 +154,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
               let preset = Preset.all.first(where: { $0.id == id }) else { return }
         store.apply(preset)
         rebuildMenu()
+    }
+
+    @objc private func toggleDisplay(_ sender: NSMenuItem) {
+        guard let key = sender.representedObject as? String else { return }
+        store.setScreen(key, lit: !store.state.isLit(screenNamed: key))
+    }
+
+    @objc private func lightAllDisplays() {
+        store.lightAllDisplays()
     }
 
     @objc private func activateApp(_ sender: NSMenuItem) {
