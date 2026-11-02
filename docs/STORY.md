@@ -87,3 +87,25 @@ context, then deleted before the first public push — it included a sidebar lis
 unrelated project names, which has no business in a public repo. And the Apple TV could not be
 captured at all: `devicectl device capture screenshot` returns `CoreDeviceError 25004` against
 tvOS, and falling back to a simulator was off the table.
+
+---
+
+## Chapter 2 — Same code, second Mac, newer Xcode
+
+*2026-11-02 · iteration 02*
+
+**The goal** was to build the Mac app on the second Mac in the two-Mac setup and install it
+there. The first `xcodebuild` failed immediately, not because of the code but because
+`xcode-select` on this machine still pointed at the Command Line Tools. Rather than change a
+system setting, the build ran with `DEVELOPER_DIR` pointed at `/Applications/Xcode.app` for
+the one command. This Mac turned out to be on Xcode 27.2, the version chapter 1's standards
+check had flagged as current but out of reach on the first Mac. The prediction held: the
+project built in Release on Xcode 27 without a single change to a source file or build
+setting. Keylight went into `/Applications`, launched, and put a light window on both
+displays with the control box in its corner. The one thing that didn't work was the
+screenshot. This Mac hasn't granted Screen Recording to the terminal, so `screencapture`
+couldn't read the window, and no image was faked in its place.
+
+**Lesson.** Pinning `SWIFT_VERSION = 5.0` and minimal concurrency checking let a major Xcode
+upgrade go through without any code changes.
+

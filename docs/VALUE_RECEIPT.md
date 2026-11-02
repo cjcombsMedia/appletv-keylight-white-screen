@@ -14,12 +14,12 @@
 
 | Metric | Total |
 |---|---|
-| Tokens (all types) | **102,538,606** (measured) |
-| Estimated API-equivalent cost | **~$271** (ESTIMATE) |
-| Active build time | **2.60 h** (measured) |
-| Manual-equivalent effort | **~50 h** (ESTIMATE) |
-| Hours saved | **~47.4 h** (ESTIMATE) |
-| Value at $100/hr | **~$4,740** (ESTIMATE) |
+| Tokens (all types) | **~103,560,000** (measured through iter 02 write-up) |
+| Estimated API-equivalent cost | **~$274** (ESTIMATE) |
+| Active build time | **~2.75 h** (iter 02 portion ESTIMATE) |
+| Manual-equivalent effort | **~50.5 h** (ESTIMATE) |
+| Hours saved | **~47.75 h** (ESTIMATE) |
+| Value at $100/hr | **~$4,775** (ESTIMATE) |
 
 ---
 
@@ -106,3 +106,42 @@ resume gap is excluded). Wall-clock span was 2,225 h across resumes.
 - **Platform gotchas documented** so they aren't rediscovered: tvOS icons need the Simulator
   runtime even for device builds; `devicectl` screenshots don't work against tvOS;
   touchpad-hover behaviour cannot be reproduced in a simulator.
+
+---
+
+## Iteration 02 — 2026-11-02 14:00 — Mac app built and installed on the second Mac
+
+**What shipped**
+
+- `KeylightMac` Release build on CJ's MacBook Pro (macOS 27.2, Xcode 27.2): first build of the
+  project on Xcode 27. Zero code errors or warnings, no source or project changes needed.
+- Installed to `/Applications/Keylight.app` with `ditto` and launched; light windows came up
+  on both displays and the control panel sits in the bottom-right corner (read back from
+  `CGWindowList`).
+
+**Measured work**
+
+| | |
+|---|---|
+| Files edited | 3 docs (`STANDARDS.md`, `STORY.md`, this file); no code |
+| Lines of code | unchanged (3,161 Swift) |
+| Builds / installs | 1 Release build, 1 install to `/Applications` |
+| Errors fixed | 1 environment issue: `xcode-select` pointed at Command Line Tools, worked around with `DEVELOPER_DIR` |
+
+**Tokens (measured from transcript, before this write-up):** input 24 · output 3,998 ·
+cache creation 45,894 · cache read 971,833 · **total 1,021,749**. The write-up adds a little
+more. Run `/usage` for the final figure.
+
+**Cost — ESTIMATE:** ~$3 API-equivalent. Plan billing, not metered.
+
+**Plan usage %:** 5-hour window **2%** used; weekly (all models) 21% (`get_usage`, measured).
+
+**Manual-equivalent — ESTIMATE:** ~0.5 h to diagnose the `xcode-select` failure on a fresh
+machine, build Release, install and verify the windows. **Actual elapsed:** ~0.15 h (ESTIMATE).
+**Saved:** ~0.35 h, **~$35** (ESTIMATE).
+
+**Other value:** confirmed that the Xcode 27 compatibility prediction in STANDARDS.md holds;
+recorded the second Mac's toolchain.
+
+**Screenshot:** none. `screencapture` returned *"could not create image from window"*
+because the terminal process has no Screen Recording permission on this Mac.

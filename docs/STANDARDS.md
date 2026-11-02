@@ -12,6 +12,20 @@ Versions and official guidance this project is built against. Recheck any entry 
 | macOS (host) | 26.5.2 | 2026-11-02 | `sw_vers` |
 | Swift language mode | 5 (`SWIFT_VERSION = 5.0`) | 2026-11-02 | project build settings |
 
+### Second Mac (CJ's MacBook Pro) — checked 2026-11-02
+
+| Item | Version here | Source |
+|---|---|---|
+| Xcode | **27.2** (27B52), current stable | `xcodebuild -version` |
+| macOS (host) | 27.2 (26B123) | `sw_vers` |
+
+`xcode-select` on this Mac points at `/Library/Developer/CommandLineTools`, so a bare
+`xcodebuild` fails with *"requires Xcode, but active developer directory … is a command line
+tools instance"*. Builds here use `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`
+per command instead of changing the system setting. `KeylightMac` builds on Xcode 27.2 in
+Release with zero code errors or warnings and no project changes, which confirms the
+compatibility prediction below.
+
 ## Current Apple releases
 
 | Item | Current stable | Checked | Source |
