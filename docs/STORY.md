@@ -143,3 +143,29 @@ built-in display switched off.
 find. Half of this request was already in the app.
 
 **Image:** [shape renders](../screenshots/2026-11-02_iter-03_shape-renders.png)
+
+---
+
+## Chapter 4 — One command to install it anywhere
+
+*2026-11-09 · iteration 04*
+
+**The goal** was to push the new build to GitHub and make installing it on the other laptop
+something Claude there could do from one sentence. The first choice was between shipping a
+prebuilt app and building from source. A downloaded, ad-hoc-signed app runs straight into
+Gatekeeper's quarantine. Both Macs already have Xcode, so building from source was the path
+with nothing to click through. The result is `install-mac.sh` at the repo root plus an
+`INSTALL.md` written as steps another Claude can follow: pull or clone, run the script,
+confirm the process is running. The script carries the lesson from chapter 2. If
+`xcode-select` points at the Command Line Tools, it finds Xcode and uses it for that one run
+without touching the system setting. By this iteration this Mac had been switched to Xcode, so
+the fallback was tested deliberately by forcing `DEVELOPER_DIR` to the Command Line Tools.
+Both paths built, installed and relaunched in under ten seconds. The global rules had also
+gained a battery section since the last session. A first idle measurement showed Keylight at
+0% CPU with no power assertions while the light is off, and the power design, including its
+two known gaps, went into STANDARDS.md.
+
+**Lesson.** Write the installer for the machine you can't see. The fallback that mattered was
+the one this Mac no longer needed.
+
+**Screenshot:** none. Screen Recording is still not granted to the terminal.

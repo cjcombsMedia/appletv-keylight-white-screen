@@ -26,6 +26,23 @@ per command instead of changing the system setting. `KeylightMac` builds on Xcod
 Release with zero code errors or warnings and no project changes, which confirms the
 compatibility prediction below.
 
+## Power design (Keylight for Mac) — recorded 2026-11-09
+
+- **App type:** menu-bar agent (`LSUIElement`), always running, no Dock icon.
+- **Idle work:** none. The light is static SwiftUI geometry with no animation loop or
+  `TimelineView`. State saves are debounced at 500 ms and only fire on a change.
+- **What wakes it:** user input, `didChangeScreenParametersNotification` (monitor plugged or
+  unplugged), and the opt-in *Follow the camera* monitor. That monitor polls
+  `isInUseByAnotherApplication` every 2 s, but only while the option is on.
+- **Power assertions:** `beginActivity(.idleDisplaySleepDisabled)` is held only while the light
+  is on, a task the user started, and released when it's switched off.
+- **Measured 2026-11-09, light off, idle:** `top -l 2 -s 15`: 0.0% CPU, 7 idle wakeups in the
+  sample, 0.0 power. `pmset -g assertions`: none held.
+- **Known gaps against the battery rules:** no `willSleep`/`didWake` hooks yet. The camera
+  poll should pause on sleep and when the screens sleep, and it could become event-driven via
+  CoreMediaIO property listeners. Nothing runs while the light is off and following the
+  camera is disabled, so this matters only for that opt-in mode.
+
 ## Current Apple releases
 
 | Item | Current stable | Checked | Source |

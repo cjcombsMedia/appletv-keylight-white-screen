@@ -14,12 +14,12 @@
 
 | Metric | Total |
 |---|---|
-| Tokens (all types) | **~106,236,000** (measured through iter 03) |
-| Estimated API-equivalent cost | **~$281** (ESTIMATE) |
-| Active build time | **~2.85 h** (iter 02–03 portions from transcript timestamps) |
-| Manual-equivalent effort | **~55.5 h** (ESTIMATE) |
-| Hours saved | **~52.65 h** (ESTIMATE) |
-| Value at $100/hr | **~$5,265** (ESTIMATE) |
+| Tokens (all types) | **~109,166,000** (measured through iter 04) |
+| Estimated API-equivalent cost | **~$289** (ESTIMATE) |
+| Active build time | **~2.95 h** (iter 02–04 portions from transcript timestamps) |
+| Manual-equivalent effort | **~57.5 h** (ESTIMATE) |
+| Hours saved | **~54.55 h** (ESTIMATE) |
+| Value at $100/hr | **~$5,455** (ESTIMATE) |
 
 ---
 
@@ -193,3 +193,44 @@ gotcha in STANDARDS.md; checked 4 APIs against developer.apple.com.
 
 **Image:** [offscreen shape renders](../screenshots/2026-11-02_iter-03_shape-renders.png).
 This is a render, not a screen capture. Screen Recording is still not granted.
+
+---
+
+## Iteration 04 — 2026-11-09 14:45 — One-command installer, pushed to GitHub
+
+**What shipped**
+
+- `install-mac.sh`: builds Release from the checkout, quits any running copy, replaces
+  `/Applications/Keylight.app`, launches it and verifies the process. It handles
+  `xcode-select` pointing at the Command Line Tools, and supports `--pull` and `--no-launch`.
+- `INSTALL.md`: a one-sentence prompt for Claude on another Mac, steps for Claude to follow,
+  and the manual commands.
+- README install section. Power design recorded in STANDARDS.md.
+- Pushed `main` to `cjcombsMedia/appletv-keylight-white-screen` (public).
+
+**Measured work**
+
+| | |
+|---|---|
+| Files added / edited | 2 added (`install-mac.sh` ~95 lines, `INSTALL.md`), 4 docs edited; no Swift changes |
+| Builds / installs | 2 full installer runs (normal and forced Command Line Tools path), both exit clean, ~8.5 s each |
+| Errors fixed | 0 |
+| Power check | idle, light off: 0.0% CPU, 7 idle wakeups / 15 s sample, 0.0 power, no assertions |
+
+**Tokens (measured from transcript):** session total 6,626,484 minus 3,696,595 at iter 03 =
+**~2,929,889**. Output 16,551 · cache creation 161,080 (cache rebuilt after the week-long
+gap) · cache read 2,752,224 · input 34.
+
+**Cost — ESTIMATE:** ~$8 API-equivalent. Plan billing, not metered.
+
+**Plan usage %:** not re-read this iteration. Run `/usage`.
+
+**Manual-equivalent — ESTIMATE:** ~2 h for an installer with Xcode discovery, failure handling
+and process verification, tested on both paths, plus docs. **Actual elapsed:** ~0.1 h
+(measured from transcript timestamps). **Saved:** ~1.9 h, **~$190** (ESTIMATE).
+
+**Other value:** first idle power measurement on record; two power gaps documented (no
+sleep/wake hooks, 2 s camera poll in the opt-in mode).
+
+**Screenshot:** none. `screencapture` still returns *"could not create image from window"*
+because Screen Recording isn't granted.

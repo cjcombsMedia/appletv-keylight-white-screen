@@ -81,7 +81,14 @@ the screen in one click, optional **follow-the-camera** (light comes up when ano
 the camera, drops when it lets go — Keylight never opens it itself), display-sleep held off
 while lit, and open-at-login.
 
-→ **[Mac app details](KeylightMac/README.md)**
+**Install on any Mac with Xcode**, in one command:
+
+```bash
+git clone https://github.com/cjcombsMedia/appletv-keylight-white-screen.git && cd appletv-keylight-white-screen && ./install-mac.sh
+```
+
+Or ask Claude Code on that Mac to *"pull this repo and follow INSTALL.md"*.
+→ **[Install guide](INSTALL.md)** · **[Mac app details](KeylightMac/README.md)**
 
 ---
 
