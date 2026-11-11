@@ -79,6 +79,15 @@ if pgrep -xq "$APP_NAME"; then
 fi
 rm -rf "$DEST"
 ditto "$built" "$DEST"
+# Receipt for CJ's MacTools > App Updater: which commit this Mac now runs.
+( set +e
+  dir="$HOME/Library/Application Support/CJ Apps/receipts"; mkdir -p "$dir"
+  top=$(git -C "$(dirname "$0")" rev-parse --show-toplevel)
+  dirty=false; [ -n "$(git -C "$top" status --porcelain)" ] && dirty=true
+  printf '{"bundleId":"%s","commit":"%s","branch":"%s","dirty":%s,"source":"%s","installedAt":"%s","mac":"%s"}\n' \
+    "com.cjcombs.KeylightMac" "$(git -C "$top" rev-parse HEAD)" "$(git -C "$top" rev-parse --abbrev-ref HEAD)" "$dirty" \
+    "$top" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$(scutil --get ComputerName)" > "$dir/com.cjcombs.KeylightMac.json"
+) || true
 echo "Installed."
 
 if $launch; then

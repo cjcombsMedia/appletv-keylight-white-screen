@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "folder": "appletv-keylight-white-screen",
+  "apps": [
+    {
+      "name": "Keylight",
+      "platform": "mac",
+      "bundleId": "com.cjcombs.KeylightMac",
+      "install": "install-mac.sh",
+      "summary": "Turns your screen into a key light for video calls"
+    }
+  ]
+}
