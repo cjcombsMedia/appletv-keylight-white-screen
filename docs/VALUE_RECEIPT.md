@@ -14,12 +14,12 @@
 
 | Metric | Total |
 |---|---|
-| Tokens (all types) | **~109,166,000** (measured through iter 04) |
-| Estimated API-equivalent cost | **~$289** (ESTIMATE) |
-| Active build time | **~2.95 h** (iter 02–04 portions from transcript timestamps) |
-| Manual-equivalent effort | **~57.5 h** (ESTIMATE) |
-| Hours saved | **~54.55 h** (ESTIMATE) |
-| Value at $100/hr | **~$5,455** (ESTIMATE) |
+| Tokens (all types) | **~116,312,000** (measured through iter 05) |
+| Estimated API-equivalent cost | **~$306** (ESTIMATE) |
+| Active build time | **~3.1 h** (iter 02–05 portions from transcript timestamps) |
+| Manual-equivalent effort | **~61.5 h** (ESTIMATE) |
+| Hours saved | **~58.4 h** (ESTIMATE) |
+| Value at $100/hr | **~$5,840** (ESTIMATE) |
 
 ---
 
@@ -233,4 +233,51 @@ and process verification, tested on both paths, plus docs. **Actual elapsed:** ~
 sleep/wake hooks, 2 s camera poll in the opt-in mode).
 
 **Screenshot:** none. `screencapture` still returns *"could not create image from window"*
+because Screen Recording isn't granted.
+
+---
+
+## Iteration 05 — 2026-11-11 11:57 — App icon and the CJ's Keylight name
+
+**What shipped**
+
+- First real app icon: an Icon Composer `AppIcon.icon` in CJ's standard style (black gradient
+  tile, white display outline, yellow Two Panel light bars), drawn by `Tools/make-icon.swift`.
+  Three options were rendered; CJ picked A.
+- Visible name **CJ's Keylight**: `CFBundleName`, `CFBundleDisplayName`, panel title, header,
+  menu-bar tooltip, accessibility label, *Quit CJ's Keylight*. The panel header shows the app
+  icon instead of an SF Symbol.
+- Hand-written `KeylightMac/Info.plist` (`GENERATE_INFOPLIST_FILE = NO`), identical to the
+  generated one apart from `CFBundleName`.
+- Installer installs `/Applications/CJ's Keylight.app`, removes the old `Keylight.app`, quits by
+  bundle ID. `--pull` refuses dirty trees and uses `ghx` when present.
+- Docs updated: README, Mac README, INSTALL, `cjapp.json`, STANDARDS.
+
+**Measured work**
+
+| | |
+|---|---|
+| Files added | `Tools/make-icon.swift`, `AppIcon.icon` (json + 2 SVGs), `KeylightMac/Info.plist` |
+| Files edited | 4 Swift, `project.pbxproj`, `install-mac.sh`, `cjapp.json`, 5 docs |
+| Builds / installs | 4 Release builds (0 warnings), 2 installer runs to `/Applications` |
+| Verification | `ictool` light and dark renders; installed `AppIcon.icns` extracted with `sips` shows a full tile, no grey border; PlistBuddy shows both names; settings carried over |
+| Errors fixed | 1: `CFBundleName` overridden by the generated Info.plist |
+
+**Tokens (measured from transcript):** session total 13,772,643 minus 6,626,484 at iter 04 =
+**~7,146,159**. Output 31,421 · cache creation 217,010 · cache read 6,897,664 · input 64.
+
+**Cost — ESTIMATE:** ~$17 API-equivalent. Plan billing, not metered.
+
+**Plan usage %:** not re-read this iteration. Run `/usage`.
+
+**Manual-equivalent — ESTIMATE:** ~4 h. Basis: designing and rendering three icon options,
+building an Icon Composer document from a script, a rename across the plist, code and
+installer, diagnosing the `CFBundleName` override, and verification. **Actual elapsed:**
+~0.15 h (measured from transcript timestamps). **Saved:** ~3.85 h, **~$385** (ESTIMATE).
+
+**Other value:** documented the `CFBundleName` and `GENERATE_INFOPLIST_FILE` gotcha; the
+installer now follows the global easy-install rules (dirty-tree guard, `ghx`).
+
+**Image:** [icon before and after](../screenshots/2026-11-11_iter-05_app-icon-before-after.png).
+These are renders and an extracted installed icon. A screen capture still isn't possible
 because Screen Recording isn't granted.

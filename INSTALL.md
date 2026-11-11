@@ -1,4 +1,4 @@
-# Install Keylight for Mac
+# Install CJ's Keylight for Mac
 
 One script builds the Mac app from source and installs it to `/Applications`. Building from
 source needs **Xcode** (the full app, not just the Command Line Tools) and **macOS 14 or
@@ -9,7 +9,7 @@ later**. There's no prebuilt download to trust, no Gatekeeper prompt and no sign
 On the other Mac, open Claude Code and say:
 
 > Pull github.com/cjcombsMedia/appletv-keylight-white-screen and follow INSTALL.md to install
-> Keylight for Mac.
+> CJ's Keylight for Mac.
 
 ## Instructions for Claude
 
@@ -23,9 +23,10 @@ On the other Mac, open Claude Code and say:
      The repo is public, so no sign-in is needed.
 2. **Run the installer** from the repo root: `./install-mac.sh`
    It finds Xcode even when `xcode-select` points at the Command Line Tools, builds Release,
-   quits any running Keylight, replaces `/Applications/Keylight.app`, and launches it.
-3. **Check it worked.** The script ends with `Done: Keylight (commit …) is in /Applications.`
-   and `pgrep -x Keylight` returns a process ID. If the build fails, the script prints the
+   quits any running copy, installs `/Applications/CJ's Keylight.app` (removing an old
+   `/Applications/Keylight.app` from before the rename), and launches it.
+3. **Check it worked.** The script ends with `Done: CJ's Keylight (commit …) is in /Applications.`
+   and `pgrep -x Keylight` returns a process ID. The process keeps the short name on purpose. If the build fails, the script prints the
    compiler errors. Report them, and don't change signing settings to get past them.
 4. **Tell CJ** to look for the lightbulb in the menu bar. The control box opens in the
    bottom-right of the main display.
@@ -40,12 +41,15 @@ git clone https://github.com/cjcombsMedia/appletv-keylight-white-screen.git
 cd appletv-keylight-white-screen && ./install-mac.sh
 ```
 
-To update later, use `./install-mac.sh --pull`. It runs `git pull --ff-only` first, then
-rebuilds and reinstalls. Your settings live in the app's preferences, not in the app bundle,
+To update later, use `./install-mac.sh --pull`. It refuses to run over uncommitted changes,
+pulls `main` (through `ghx pull personal` when `ghx` is installed, otherwise
+`git pull --ff-only`), then rebuilds and reinstalls. Your settings live in the app's preferences, not in the app bundle,
 so they survive reinstalls.
 
 ## Notes
 
+- **Renamed from Keylight:** if *Open at login* was on before the rename, switch it off and on
+  again once so macOS registers the new `CJ's Keylight.app`.
 - **Open at login:** turn it on *after* installing, from the control box under **More**. That
   way macOS registers the copy in `/Applications`.
 - **No Xcode?** Install it from the App Store, open it once to finish setup, then re-run the

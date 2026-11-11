@@ -19,7 +19,7 @@ final class ControlWindowController: NSObject, NSWindowDelegate {
             backing: .buffered,
             defer: false)
 
-        panel.title = "Keylight"
+        panel.title = "CJ's Keylight"
         panel.level = .floating
         panel.isFloatingPanel = true
         panel.becomesKeyOnlyIfNeeded = true

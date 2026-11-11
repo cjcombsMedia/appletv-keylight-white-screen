@@ -54,7 +54,7 @@ while the app is in front.
 
 → **[Full setup and deployment guide](SETUP.md)**
 
-## 💻 Keylight for Mac
+## 💻 CJ's Keylight for Mac
 
 A menu-bar agent — no Dock icon, a lightbulb in the menu bar, and a small control box in the
 corner.
@@ -126,10 +126,11 @@ your Apple TV over the network (Xcode → Window → Devices and Simulators), th
 [SETUP.md](SETUP.md) covers pairing, free-vs-paid provisioning, and the TV picture settings
 that actually matter.
 
-**Mac** — open `KeylightMac/KeylightMac.xcodeproj` and ⌘R, or build and copy to /Applications:
+**Mac** — open `KeylightMac/KeylightMac.xcodeproj` and ⌘R, or build and install to
+`/Applications/CJ's Keylight.app` in one step:
 
 ```bash
-xcodebuild -project KeylightMac/KeylightMac.xcodeproj -scheme KeylightMac -configuration Release build
+./install-mac.sh
 ```
 
 > **Signing:** both projects carry a `DEVELOPMENT_TEAM` that is not yours. Change it to your own

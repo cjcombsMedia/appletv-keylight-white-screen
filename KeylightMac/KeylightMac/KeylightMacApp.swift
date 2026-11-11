@@ -47,8 +47,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func buildStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         statusItem.button?.image = NSImage(systemSymbolName: "lightbulb.fill",
-                                           accessibilityDescription: "Keylight")
-        statusItem.button?.toolTip = "Keylight"
+                                           accessibilityDescription: "CJ's Keylight")
+        statusItem.button?.toolTip = "CJ's Keylight"
         let menu = NSMenu()
         menu.delegate = self
         statusItem.menu = menu
@@ -133,7 +133,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         menu.addItem(.separator())
 
-        let quit = NSMenuItem(title: "Quit Keylight", action: #selector(quit), keyEquivalent: "q")
+        let quit = NSMenuItem(title: "Quit CJ's Keylight", action: #selector(quit), keyEquivalent: "q")
         quit.target = self
         menu.addItem(quit)
     }

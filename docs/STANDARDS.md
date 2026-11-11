@@ -43,6 +43,39 @@ compatibility prediction below.
   CoreMediaIO property listeners. Nothing runs while the light is off and following the
   camera is disabled, so this matters only for that opt-in mode.
 
+## App icon and name — recorded 2026-11-11
+
+CJ's standard icon, applied to the Mac app:
+
+| Part | Spec |
+|---|---|
+| Format | Icon Composer document `KeylightMac/KeylightMac/AppIcon.icon`, `ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon`, no `.appiconset` |
+| Tile | `fill-specializations`: display-p3 grey 0.17 → 0.02 top to bottom (light), 0.14 → 0.01 (dark) |
+| Mark | white line art, stroke 34 on 1024, round caps and joins: display outline 640 × 400 plus stand, about 62% of the tile, centred |
+| Accent | `#F7CA53`: the two Two Panel light bars, the only yellow |
+| Group | one group, `glass: true` on both layers, lighting `combined`, neutral shadow 0.5, translucency off |
+| Platforms | `"supported-platforms": { "squares": ["macOS"] }`, Mac-only |
+| Source | `Tools/make-icon.swift` writes the whole document; outputs are never hand-edited |
+| Menu bar | stays the monochrome template `lightbulb.fill` |
+
+Why `.icon` and not PNGs: on macOS 26 and later, a classic `AppIcon.appiconset` is shrunk onto
+a grey system tile; only an Icon Composer document fills it. Verified by rendering with
+`ictool --platform macOS --rendition Default|Dark` and by extracting the installed
+`AppIcon.icns` with `sips`: full tile, no grey border. Sources: CJ's icon spec; the reference
+implementations in `CJ-Command-Center-AI/tools/make-icon.swift` and
+`cj-transcriber/tools/make-icon.swift`; Xcode 27.2's Icon Composer `ictool`.
+
+**Visible name `CJ's Keylight`; deliberately unchanged:** bundle ID, `PRODUCT_NAME`,
+executable, the `UserDefaults` domain (saved settings carried over and were checked after the
+reinstall), and the process name used by `pgrep`/`top`.
+
+**Gotcha: you can't override `CFBundleName` while Xcode generates the Info.plist.** With
+`GENERATE_INFOPLIST_FILE = YES`, `CFBundleName` is always `$(PRODUCT_NAME)`. A partial
+`INFOPLIST_FILE` with `CFBundleName` is silently overridden, and there is no
+`INFOPLIST_KEY_CFBundleName` (passing it does nothing). The fix was a full hand-written
+`KeylightMac/Info.plist` with `GENERATE_INFOPLIST_FILE = NO`. It was checked key for key
+against the generated plist, and the only difference is `CFBundleName`.
+
 ## Current Apple releases
 
 | Item | Current stable | Checked | Source |

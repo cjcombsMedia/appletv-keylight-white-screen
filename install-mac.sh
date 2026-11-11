@@ -1,8 +1,9 @@
 #!/bin/bash
-# Build Keylight for Mac from this checkout and install it to /Applications.
+# Build CJ's Keylight for Mac from this checkout and install it to /Applications.
 #
 #   ./install-mac.sh            build, install, launch
-#   ./install-mac.sh --pull     git pull --ff-only first, then the above
+#   ./install-mac.sh --pull     pull main first (through ghx when installed), then the above;
+#                               refuses to run over uncommitted changes
 #   ./install-mac.sh --no-launch
 #
 # Needs Xcode (not just the Command Line Tools). Works whichever developer directory
@@ -11,10 +12,15 @@
 
 set -euo pipefail
 
+# PRODUCT_NAME, and so the executable and the process name, stays "Keylight"; only the
+# installed bundle and what people see carry the "CJ's" name.
 APP_NAME="Keylight"
+DISPLAY_NAME="CJ's Keylight"
+BUNDLE_ID="com.cjcombs.KeylightMac"
 PROJECT="KeylightMac/KeylightMac.xcodeproj"
 SCHEME="KeylightMac"
-DEST="/Applications/${APP_NAME}.app"
+DEST="/Applications/${DISPLAY_NAME}.app"
+OLD_DEST="/Applications/${APP_NAME}.app"
 
 pull=false
 launch=true
@@ -22,7 +28,7 @@ for arg in "$@"; do
     case "$arg" in
         --pull)      pull=true ;;
         --no-launch) launch=false ;;
-        -h|--help)   sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help)   sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         *)           echo "Unknown option: $arg (try --help)" >&2; exit 2 ;;
     esac
 done
@@ -52,7 +58,12 @@ xcodebuild -version | head -1
 # --- Source --------------------------------------------------------------------------
 if $pull; then
     step "Pulling latest"
-    git pull --ff-only
+    [[ -z "$(git status --porcelain)" ]] || fail "Uncommitted changes here — commit or stash them, then re-run with --pull."
+    if command -v ghx >/dev/null 2>&1; then
+        ghx pull personal
+    else
+        git pull --ff-only
+    fi
 fi
 commit="$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
 echo "Building commit $commit"
@@ -74,11 +85,13 @@ echo "Build succeeded."
 # --- Install -------------------------------------------------------------------------
 step "Installing to $DEST"
 if pgrep -xq "$APP_NAME"; then
-    osascript -e "quit app \"$APP_NAME\"" >/dev/null 2>&1 || true
+    osascript -e "quit app id \"$BUNDLE_ID\"" >/dev/null 2>&1 || true
     for _ in {1..20}; do pgrep -xq "$APP_NAME" || break; sleep 0.25; done
 fi
 rm -rf "$DEST"
 ditto "$built" "$DEST"
+# Builds before the rename installed as Keylight.app; don't leave two copies.
+[[ -d "$OLD_DEST" ]] && rm -rf "$OLD_DEST" && echo "Removed the old $OLD_DEST"
 # Receipt for CJ's MacTools > App Updater: which commit this Mac now runs.
 ( set +e
   dir="$HOME/Library/Application Support/CJ Apps/receipts"; mkdir -p "$dir"
@@ -94,8 +107,8 @@ if $launch; then
     step "Launching"
     open "$DEST"
     for _ in {1..20}; do pgrep -xq "$APP_NAME" && break; sleep 0.25; done
-    pgrep -xq "$APP_NAME" || fail "Installed, but $APP_NAME didn't start. Try: open \"$DEST\""
+    pgrep -xq "$APP_NAME" || fail "Installed, but $DISPLAY_NAME didn't start. Try: open \"$DEST\""
     echo "Running — look for the lightbulb in the menu bar."
 fi
 
-printf '\n\033[32mDone:\033[0m %s (commit %s) is in /Applications.\n' "$APP_NAME" "$commit"
+printf '\n\033[32mDone:\033[0m %s (commit %s) is in /Applications.\n' "$DISPLAY_NAME" "$commit"

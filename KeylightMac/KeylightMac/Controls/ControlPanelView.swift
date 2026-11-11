@@ -37,10 +37,12 @@ struct ControlPanelView: View {
     private var header: some View {
         @Bindable var store = store
         return HStack(spacing: 10) {
-            Image(systemName: store.state.isOn ? "lightbulb.fill" : "lightbulb")
-                .foregroundStyle(store.state.isOn ? swatch : .secondary)
-                .font(.system(size: 15, weight: .semibold))
-            Text("Keylight")
+            // The app's own icon, not an SF Symbol: the same tile, mark and accent as the Dock.
+            Image(nsImage: NSApp.applicationIconImage)
+                .resizable()
+                .frame(width: 22, height: 22)
+                .accessibilityHidden(true)
+            Text("CJ's Keylight")
                 .font(.system(size: 14, weight: .bold))
             Spacer()
             Toggle("", isOn: $store.state.isOn)
@@ -49,10 +51,6 @@ struct ControlPanelView: View {
                 .labelsHidden()
                 .help("Turn the light on or off")
         }
-    }
-
-    private var swatch: Color {
-        ColorScience.whiteLight(kelvin: store.state.kelvin, tint: store.state.tint, brightness: 1)
     }
 
     // MARK: Essentials

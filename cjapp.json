@@ -3,7 +3,7 @@
   "folder": "appletv-keylight-white-screen",
   "apps": [
     {
-      "name": "Keylight",
+      "name": "CJ's Keylight",
       "platform": "mac",
       "bundleId": "com.cjcombs.KeylightMac",
       "install": "install-mac.sh",

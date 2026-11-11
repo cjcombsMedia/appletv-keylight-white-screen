@@ -169,3 +169,34 @@ two known gaps, went into STANDARDS.md.
 the one this Mac no longer needed.
 
 **Screenshot:** none. Screen Recording is still not granted to the terminal.
+
+---
+
+## Chapter 5 — A face for the app, and a name
+
+*2026-11-11 · iteration 05*
+
+**The goal** was to fix the app icon, and it turned out there wasn't one. The Mac target had
+no asset catalog at all, so macOS showed its blank placeholder grid in Finder and Spotlight.
+Keylight had no symbol of its own either; the only one was an SF lightbulb in the menu bar.
+So three options were drawn in CJ's standard style: a display with two yellow light bars, a
+display with a yellow ring light, and a lightbulb with a yellow filament. Each was rendered
+with `ictool`, and CJ picked the display with light bars. That's the app's default Two Panel
+layout, and it says the screen itself is the light. The icon is an Icon Composer document
+drawn by `Tools/make-icon.swift`, because on macOS 26 a PNG icon set gets shrunk onto a grey
+tile. The same iteration renamed the app to **CJ's Keylight** without touching the bundle ID,
+so saved settings carried straight over.
+
+**What broke.** The first install showed the right display name but a bundle name still
+reading "Keylight". Xcode's generated Info.plist always writes `CFBundleName` from
+`PRODUCT_NAME`, and it silently overrode both a partial plist and a build-setting override.
+Keeping `PRODUCT_NAME` mattered, since `pgrep`, `top` and the installer depend on it. So the
+Info.plist became a hand-written file, checked key for key against the generated one, with
+the name as the only difference. The installer learned the new name too. It now quits by
+bundle ID, removes the old `Keylight.app` so there's never two, and `--pull` refuses to run
+over uncommitted changes.
+
+**Lesson.** "Fix the icon" can mean "there is no icon". Look at what's actually installed
+before you start redrawing.
+
+**Image:** [icon before and after](../screenshots/2026-11-11_iter-05_app-icon-before-after.png)

@@ -1,4 +1,4 @@
-# Keylight for Mac
+# CJ's Keylight for Mac
 
 A menu-bar key light for the Mac. Lights your face from the screen you're already looking at,
 with a small control box in the corner and one-click focus back to Teams or Zoom.
@@ -12,7 +12,8 @@ open KeylightMac.xcodeproj
 Then ⌘R. It's an agent app: no Dock icon, a lightbulb in the menu bar, and the control box in
 the bottom-right of your main display.
 
-To keep it around, copy the built `Keylight.app` to `/Applications` and launch it from there —
+To keep it around, run `./install-mac.sh` from the repo root. It installs
+`/Applications/CJ's Keylight.app` and launches it from there —
 **do that before switching on "Open at login"**, or macOS registers the copy sitting in
 DerivedData.
 
@@ -112,3 +113,20 @@ The screen is a dim light source compared to a real fixture, so the wins are in 
 (CIE 1931 xy) → linear sRGB, normalised on the peak channel, plus the ±green trim and the sRGB
 transfer function. The two apps are deliberately separate projects, so a fix to the colour maths
 needs applying in both places.
+
+## Name and icon
+
+The visible name is **CJ's Keylight** (`CFBundleName` and `CFBundleDisplayName` in
+`KeylightMac/Info.plist`, the panel title, header, menu-bar tooltip and *Quit* item). The bundle
+ID `com.cjcombs.KeylightMac`, `PRODUCT_NAME` (`Keylight`), the executable and the saved
+settings are unchanged. The Info.plist is written by hand because Xcode's generated one always
+sets `CFBundleName` to `PRODUCT_NAME`.
+
+The icon is an Icon Composer document, `KeylightMac/AppIcon.icon`, drawn by
+`Tools/make-icon.swift`: a display outline in white with the two Two Panel light bars in
+yellow. Never edit the SVGs or `icon.json` by hand; change the script and re-run it:
+
+```bash
+swift Tools/make-icon.swift KeylightMac/KeylightMac/AppIcon.icon
+```
+
