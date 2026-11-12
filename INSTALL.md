@@ -4,6 +4,14 @@ One script builds the Mac app from source and installs it to `/Applications`. Bu
 source needs **Xcode** (the full app, not just the Command Line Tools) and **macOS 14 or
 later**. There's no prebuilt download to trust, no Gatekeeper prompt and no signing setup.
 
+Repos: `cj/appletv-keylight-white-screen` on TANSTAFL (`tanstafl.devservers1313.space`, private,
+the source) and `github.com/cjcombsMedia/appletv-keylight-white-screen` (public, the second copy).
+
+## The easy way
+
+CJ's MacTools → App Updater → CJ's Keylight → **Install** (or **Update**). It clones from
+TANSTAFL and runs the same script as below.
+
 ## Ask Claude to do it
 
 On the other Mac, open Claude Code and say:
@@ -16,12 +24,16 @@ On the other Mac, open Claude Code and say:
 1. **Get the code.**
    - If the repo is already on this Mac (check `~/PROJECTS/appletv-keylight-white-screen`),
      `cd` into it and run `git status`. If there are local changes, stop and ask before pulling.
-     Otherwise pull, using `ghx pull personal` if `ghx` is installed, or `git pull --ff-only`
-     if it isn't.
-   - If it isn't there, clone it with `ghx clone personal cjcombsMedia/appletv-keylight-white-screen ~/PROJECTS/appletv-keylight-white-screen`
-     if `ghx` is installed. If not, use plain `git clone https://github.com/cjcombsMedia/appletv-keylight-white-screen.git ~/PROJECTS/appletv-keylight-white-screen`.
-     The repo is public, so no sign-in is needed.
-2. **Run the installer** from the repo root: `./install-mac.sh`
+     Otherwise skip to step 2 and run `./install-mac.sh --pull`, which pulls `main` from
+     TANSTAFL (then GitHub) before it builds.
+   - If it isn't there and `ghx` is installed, clone it from TANSTAFL and link the GitHub copy:
+     `ghx clone tanstafl cj/appletv-keylight-white-screen ~/PROJECTS/appletv-keylight-white-screen`,
+     then in that folder `ghx link personal cjcombsMedia/appletv-keylight-white-screen`.
+     With `ghx` but no TANSTAFL account, use `ghx clone personal cjcombsMedia/appletv-keylight-white-screen ~/PROJECTS/appletv-keylight-white-screen`.
+     Without `ghx`, use plain `git clone https://github.com/cjcombsMedia/appletv-keylight-white-screen.git ~/PROJECTS/appletv-keylight-white-screen`.
+     The GitHub copy is public, so no sign-in is needed.
+2. **Run the installer** from the repo root: `./install-mac.sh` (or `./install-mac.sh --pull`
+   to update an existing clone)
    It finds Xcode even when `xcode-select` points at the Command Line Tools, builds Release,
    quits any running copy, installs `/Applications/CJ's Keylight.app` (removing an old
    `/Applications/Keylight.app` from before the rename), and launches it.
@@ -33,6 +45,18 @@ On the other Mac, open Claude Code and say:
 
 ## Doing it by hand
 
+With `ghx`:
+
+```bash
+ghx clone tanstafl cj/appletv-keylight-white-screen
+```
+
+```bash
+cd appletv-keylight-white-screen && ghx link personal cjcombsMedia/appletv-keylight-white-screen && ./install-mac.sh
+```
+
+Without `ghx` (the GitHub copy is public):
+
 ```bash
 git clone https://github.com/cjcombsMedia/appletv-keylight-white-screen.git
 ```
@@ -42,8 +66,9 @@ cd appletv-keylight-white-screen && ./install-mac.sh
 ```
 
 To update later, use `./install-mac.sh --pull`. It refuses to run over uncommitted changes,
-pulls `main` (through `ghx pull personal` when `ghx` is installed, otherwise
-`git pull --ff-only`), then rebuilds and reinstalls. Your settings live in the app's preferences, not in the app bundle,
+switches to `main` and pulls it through `ghx` from the highest-priority account the clone has a
+remote for (TANSTAFL first, then GitHub personal; plain git from `origin` without `ghx`), then
+rebuilds and reinstalls. Your settings live in the app's preferences, not in the app bundle,
 so they survive reinstalls.
 
 ## Notes

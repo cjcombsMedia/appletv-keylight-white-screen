@@ -14,12 +14,12 @@
 
 | Metric | Total |
 |---|---|
-| Tokens (all types) | **~116,312,000** (measured through iter 05) |
-| Estimated API-equivalent cost | **~$306** (ESTIMATE) |
-| Active build time | **~3.1 h** (iter 02–05 portions from transcript timestamps) |
-| Manual-equivalent effort | **~61.5 h** (ESTIMATE) |
-| Hours saved | **~58.4 h** (ESTIMATE) |
-| Value at $100/hr | **~$5,840** (ESTIMATE) |
+| Tokens (all types) | **~116,312,000** (measured through iter 05) + iter 06 ESTIMATE |
+| Estimated API-equivalent cost | **~$307.50** (ESTIMATE) |
+| Active build time | **~3.25 h** (iter 02–05 portions from transcript timestamps, iter 06 estimated) |
+| Manual-equivalent effort | **~62.25 h** (ESTIMATE) |
+| Hours saved | **~59.0 h** (ESTIMATE) |
+| Value at $100/hr | **~$5,900** (ESTIMATE) |
 
 ---
 
@@ -281,3 +281,38 @@ installer now follows the global easy-install rules (dirty-tree guard, `ghx`).
 **Image:** [icon before and after](../screenshots/2026-11-11_iter-05_app-icon-before-after.png).
 These are renders and an extracted installed icon. A screen capture still isn't possible
 because Screen Recording isn't granted.
+
+---
+
+## Iteration 06 — 2026-11-12 — `--pull` pulls from TANSTAFL first
+
+**What shipped**
+
+- `./install-mac.sh --pull` switches to `main` and pulls it through `ghx` from the
+  highest-priority account the clone has a remote for: TANSTAFL, then GitHub personal. Same
+  `pull_account` function as CJ's MacTools. Without `ghx`, plain git from `origin`.
+- INSTALL.md: App Updater as the easy way; first clone from TANSTAFL with the GitHub copy
+  linked; the public HTTPS clone stays for Macs without `ghx`.
+
+**Measured work**
+
+| | |
+|---|---|
+| Files edited | `install-mac.sh`, `INSTALL.md`, 2 docs |
+| Builds / installs | 2 installer runs to `/Applications` (before and after merge) |
+| Errors fixed | 0 |
+
+**Tokens — ESTIMATE:** about a fifth of one session shared with four other app repos. Run
+`/usage` for exact figures.
+
+**Cost — ESTIMATE:** ~$1.50 API-equivalent.
+
+**Plan usage %:** 14% of the 5-hour window at the start of the session.
+
+**Manual-equivalent — ESTIMATE:** ~0.75 h (port the account picker, test the pull and install,
+docs). **Actual elapsed:** ~0.15 h (ESTIMATE). **Saved:** ~0.6 h, **~$60** (ESTIMATE).
+
+**Other value:** a hand run on any Mac now builds the same `main` that App Updater installs, and
+`--pull` no longer pulls into whatever branch happens to be checked out.
+
+**Image:** none. Only the installer and its guide changed; the app looks the same.

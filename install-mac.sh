@@ -2,8 +2,8 @@
 # Build CJ's Keylight for Mac from this checkout and install it to /Applications.
 #
 #   ./install-mac.sh            build, install, launch
-#   ./install-mac.sh --pull     pull main first (through ghx when installed), then the above;
-#                               refuses to run over uncommitted changes
+#   ./install-mac.sh --pull     switch to main and pull it first (TANSTAFL, then GitHub, through
+#                               ghx when installed), then the above; refuses uncommitted changes
 #   ./install-mac.sh --no-launch
 #
 # Needs Xcode (not just the Command Line Tools). Works whichever developer directory
@@ -36,6 +36,17 @@ done
 step() { printf '\n\033[1m==> %s\033[0m\n' "$*"; }
 fail() { printf '\n\033[31mFAILED:\033[0m %s\n' "$*" >&2; exit 1; }
 
+# The highest-priority ghx account (the order `ghx accounts` lists: TANSTAFL, then GitHub
+# personal, then work) that has a remote in the clone at $1. Prints nothing if none does.
+# Same function as CJ's MacTools' install-mac.sh.
+pull_account() {  # $1 = clone folder
+  local mapped a
+  mapped=$(cd "$1" && ghx status 2>/dev/null | awk '/^REMOTE +ACCOUNT/ {t=1; next} t && NF >= 3 {print $2}')
+  for a in $(ghx accounts 2>/dev/null | awk 'NR > 1 && NF >= 3 && $1 !~ /^•/ {print $1}'); do
+    if printf '%s\n' "$mapped" | grep -qx "$a"; then echo "$a"; return 0; fi
+  done
+}
+
 cd "$(dirname "$0")"
 [[ "$(uname)" == "Darwin" ]] || fail "Keylight for Mac only builds on macOS."
 [[ -d "$PROJECT" ]] || fail "Can't find $PROJECT — run this from the repo root."
@@ -57,12 +68,19 @@ xcodebuild -version | head -1
 
 # --- Source --------------------------------------------------------------------------
 if $pull; then
-    step "Pulling latest"
+    step "Pulling the latest main"
     [[ -z "$(git status --porcelain)" ]] || fail "Uncommitted changes here — commit or stash them, then re-run with --pull."
+    [[ "$(git rev-parse --abbrev-ref HEAD)" == main ]] || { echo "Switching to main"; git switch --quiet main; }
     if command -v ghx >/dev/null 2>&1; then
-        ghx pull personal
+        account=$(pull_account .)
+        [[ -n "$account" ]] || fail "This clone has no remote for any ghx account (ghx status shows them). Add one: ghx link tanstafl cj/appletv-keylight-white-screen"
+        echo "Pulling main from $account"
+        ghx pull "$account" main --ff-only
     else
-        git pull --ff-only
+        # Plain git: origin when there is one (git clone names it that), else the first remote.
+        remote=origin
+        git remote | grep -qx origin || remote=$(git remote | head -1)
+        git pull --ff-only "$remote" main
     fi
 fi
 commit="$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
