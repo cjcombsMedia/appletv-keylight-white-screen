@@ -200,3 +200,22 @@ over uncommitted changes.
 before you start redrawing.
 
 **Image:** [icon before and after](../screenshots/2026-11-11_iter-05_app-icon-before-after.png)
+
+## Chapter 6 — Pulling from home
+
+CJ's own Forgejo server, TANSTAFL, became the source of truth for every app, with GitHub as the
+second copy, and CJ's MacTools' App Updater already pulled from it. The installer didn't:
+`./install-mac.sh --pull` ran a bare `ghx pull personal`, which pulled from GitHub into whatever
+branch was checked out. So a hand run on another Mac could build something different from what
+App Updater installs.
+
+The script now carries the same small account picker as CJ's MacTools. It reads `ghx status`
+and `ghx accounts`, switches to `main`, and pulls `main` from the first account the clone has a
+remote for, TANSTAFL before GitHub. INSTALL.md names App Updater as the easy way and starts new
+Macs from TANSTAFL with the GitHub copy linked. The public HTTPS clone from GitHub stays for a
+Mac without `ghx`, since that copy needs no sign-in.
+
+**Lesson.** When the source of truth moves, every path that fetches code has to move with it,
+including the one people only run by hand.
+
+**Image:** none. Only the installer and its guide changed.
